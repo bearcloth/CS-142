@@ -6,7 +6,7 @@ This repository is going to be utilized for the final group project.
 
 ## Authorization
 
-This repository is goign to be limited in who has access.
+This repository is going to be limited in who has access.
 Only group members and the Professor will have un-restricted access to the code base.
 
 ## Link to Google Document
