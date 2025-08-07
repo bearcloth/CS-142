@@ -92,7 +92,7 @@ public class CaesarCipher {
 					continue;
 				}
 				if ((shift + indexOfAlphabet(letters[i])) > 25) {
-					letters[i] = ALPHABET[25 - (shift + indexOfAlphabet(letters[i]))];
+					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]) - 26)];
 				} else {
 					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]))];
 				}
