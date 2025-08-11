@@ -11,3 +11,8 @@ Only group members and the Professor will have un-restricted access to the code 
 
 ## Link to Google Document
 Google document with ideas: [Google Document](https://docs.google.com/document/d/1up7vEk2pHWOgtitDnug-uhEbB6WUyQ6PqkE8_lh0pjw/edit?usp=sharing)
+
+
+TODO:
+FIX BUG WITH FILE DELETION
+JAVA DOC / COMMENT CODE
