@@ -1,17 +1,36 @@
-package caesarCypher;
-
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 
+/**
+ * A utility class which runs and operates a Caeser Cipher style encryption and decryption machine.
+ * 
+ * @author Anthony Rivera, Erick Ruiz, Cooper Fultz, Brian Vargas
+ */
 public class CaesarCipher {
 	
+	private static final int MAX_SHIFT = 25;
+	private static final int MIN_SHIFT = 1;
+	private static final int FIRST_INDEX_ALPHABET = 0;
+	private static final int NUM_LETTERS_ALPHABET = 26;
+	private static final int ZERO_ATTEMPTS = 0;
+	private static final int MAX_NUM_ATTEMPTS = 3;
+	private static final int EMPTY_MESSAGE = 0;
+	
+	/**
+	 * Character array of the english alphabet
+	 */
 	public static final char[] ALPHABET =
 		{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-				 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+		 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
+	/**
+	 * Runs encryption and decryption methods for Caeser cipher machine
+	 * 
+	 * @param args ignored
+	 * @throws IOException Throws exception for input/output stream failure.
+	 */
 	public static void main(String[] args) throws IOException {
 		
 		Scanner scanner = new Scanner(System.in);
@@ -24,39 +43,38 @@ public class CaesarCipher {
 			String choice = scanner.nextLine();
 			
 			if (choice.toLowerCase().equals("e") || 
-					choice.toLowerCase().equals("encrypt")) {
-				
+				choice.toLowerCase().equals("encrypt")) {
 				encrypt(scanner, messageFile);
 				System.exit(0);
-				
 			} else if(choice.toLowerCase().equals("d") ||
-					choice.toLowerCase().equals("decrypt")) {
-				decrypt(scanner, keyFile);
-				
-				
+					  choice.toLowerCase().equals("decrypt")) {
+					  decrypt(scanner, keyFile);
 			} else {
-				
 				System.out.println("Not a valid choice. Try again.");
 				continue; 
 			}	
 		}
 	}
 		
-
-	
+	/**
+	 * Runs the encrypt portion of the Caeser Cipher
+	 * 
+	 * @param scanner Java scanner
+	 * @param messageFile File containing encrypted message
+	 * @return Encrypted message
+	 * @throws IOException Throws exception for input/output stream failure.
+	 */
 	public static String encrypt(Scanner scanner, File messageFile) throws IOException {
 		
 		FileWriter writer = new FileWriter(messageFile);
 		
 		String message;
-		String inputDirection = null;
-		int inputShift = 0;
-		
+
 		while (true) {
 			System.out.print("Enter message: ");
 			message = scanner.nextLine();
 				
-			if (message.length() == 0) {
+			if (message.length() == EMPTY_MESSAGE) {
 				System.out.println("Must enter a message. Try again.");
 				continue;
 			}
@@ -87,146 +105,51 @@ public class CaesarCipher {
 			
 		return encryptedMessage;
 	}
-
-
-
-	private static void performLetterShift(String direction, int shift, char[] letters) {
-		if (direction.toLowerCase().equals("r") ||
-				direction.toLowerCase().equals("right")) {
-			
-			for (int i = 0; i < letters.length; i++) {
-				
-				boolean isUpper = Character.isUpperCase(letters[i]);
-				
-				if (!((letters[i] >= 'A' && letters[i] <= 'Z') ||
-					      (letters[i] >= 'a' && letters[i] <= 'z'))) {
-					continue;
-				}
-				if ((shift + indexOfAlphabet(letters[i])) >= 26) {
-					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]) - 26)];
-				} else {
-					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]))];
-				}
-				
-				if (isUpper) {
-					letters[i] = Character.toUpperCase(letters[i]);
-				}
-			} 
-		} else if(direction.toLowerCase().equals("l") ||
-				direction.toLowerCase().equals("left")) {
-			
-			for (int i = 0; i < letters.length; i++) {
-				
-				boolean isUpper = Character.isUpperCase(letters[i]);
-				
-				if (!((letters[i] >= 'A' && letters[i] <= 'Z') ||
-					      (letters[i] >= 'a' && letters[i] <= 'z'))) {
-					continue;
-				}
-				if ((indexOfAlphabet(letters[i]) - shift) < 0) {
-					letters[i] = ALPHABET[((indexOfAlphabet(letters[i]) - shift) + 26)];
-				} else {
-					letters[i] = ALPHABET[(indexOfAlphabet(letters[i]) - shift)];
-				}
-				
-				if (isUpper) {
-					letters[i] = Character.toUpperCase(letters[i]);
-				}
-			}
-			
-		}
-	}
-
-
-
-	private static int checkShift(Scanner scanner) {
-		
-		int shift;
-		
-		while (true) {
-			System.out.print("Enter number of shifts (1 - 25): ");
-			if (scanner.hasNextInt()) {
-				shift = scanner.nextInt();
-				scanner.nextLine();
-				
-				if (shift < 1 || shift > 25) {
-					System.out.println("Must enter 1 - 25. Try again.");
-					continue;
-				}
-				break;
-			}
-			
-		}
-		return shift;
-	}
-
-
-
-	private static String checkDirection(Scanner scanner) {
-		
-		String direction;
-		
-		while (true) {
-			System.out.print("Enter direction of shift (left/right): ");
-			direction = scanner.nextLine();
-			if (direction.toLowerCase().equals("left") ||
-					direction.toLowerCase().equals("l") ||
-					direction.toLowerCase().equals("right") ||
-					direction.toLowerCase().equals("r")) {
-				
-				break;					
-				
-			} else {
-				System.out.println("Must enter valid direction. Try again.");
-				continue;
-			}
-			
-		}
-		return direction;
-	}
 	
+	/**
+	 * Runs the decrypt portion of the Caeser Cipher
+	 * 
+	 * @param scanner Java scanner
+	 * @param key The saved information regarding the direction and length of character shift
+	 * @return Decrypted message
+	 * @throws IOException Throws exception for input/output stream failure.
+	 */
 	public static String decrypt(Scanner scanner, File key)
 			throws IOException {
 		
-		int numAttempts = 3;
+		int numAttempts = MAX_NUM_ATTEMPTS;
 		String keyDirection = null;
 		int keyShift = 0;
 		
 		String decryptedMessage = null;
 		
-		File encryptedMessageFile = null;
+		File encryptedMessageFile = new File("encryptedMessage.txt");
 		
-		//edited code (test)
-		encryptedMessageFile = new File("encryptedMessage.txt");
-		
-		while (numAttempts > 0) {
+		while (numAttempts > ZERO_ATTEMPTS) {
 			
 			if (!encryptedMessageFile.exists()) {
-				System.out.println("\nFile does not exist.");
+				System.out.println("\nFile Does not exist");
 				System.out.println("Please create a new file using encrypt.\n");
-	            break;
-	        } 
+				System.exit(0);
+			}
 			
 			System.out.println("You have " + numAttempts + " attempt(s) left!");
 			
 			String inputDirection = checkDirection(scanner);
 			int inputShift = checkShift(scanner);
 			
-			Scanner keyScanner = new Scanner(key);
-			
-			
-			
-			if (keyScanner.hasNextLine()) {
+			try (Scanner keyScanner = new Scanner(key)) {
+				if (keyScanner.hasNextLine()) {
+					keyDirection = keyScanner.nextLine();
+				} 
 				
-				keyDirection = keyScanner.nextLine();
-			} 
-			
-			if (keyScanner.hasNextLine()) {
-				keyShift = keyScanner.nextInt();
+				if (keyScanner.hasNextLine()) {
+					keyShift = keyScanner.nextInt();
+				}
 			}
 			
 			if (inputDirection.equalsIgnoreCase(keyDirection) &&
-					inputShift == keyShift) {
+				inputShift == keyShift) {
 				
 				encryptedMessageFile = new File("encryptedMessage.txt");
 				Scanner encryptedScanner = new Scanner(encryptedMessageFile);
@@ -253,19 +176,115 @@ public class CaesarCipher {
 				break;
 				
 			} else {
-				
 				numAttempts--;
 				
-				if (numAttempts == 0) {
-					System.out.println("No attempts left. Decryption failed!");
+				if (numAttempts == ZERO_ATTEMPTS) {
+					System.out.println("No attempts left. Decryption failed!");	
 					if (encryptedMessageFile.delete()) {
-						System.out.println("File has been Deleted");
+						System.out.println("File has been deleted!");
 					}
 				}
-			}
-			
+			}	
 		}
 		return decryptedMessage;
+	}
+
+	/*
+	 * Helper method that shifts characters based upon the user's input direction of shift
+	 * and length of shift
+	 */
+	private static void performLetterShift(String direction, int shift, char[] letters) {
+		if (direction.toLowerCase().equals("r") ||
+				direction.toLowerCase().equals("right")) {
+			
+			for (int i = 0; i < letters.length; i++) {
+				
+				boolean isUpper = Character.isUpperCase(letters[i]);
+				
+				if (!((letters[i] >= 'A' && letters[i] <= 'Z') ||
+					      (letters[i] >= 'a' && letters[i] <= 'z'))) {
+					continue;
+				}
+				if ((shift + indexOfAlphabet(letters[i])) >= NUM_LETTERS_ALPHABET) {
+					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]) - NUM_LETTERS_ALPHABET)];
+				} else {
+					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]))];
+				}
+				
+				if (isUpper) {
+					letters[i] = Character.toUpperCase(letters[i]);
+				}
+			} 
+		} else if(direction.toLowerCase().equals("l") ||
+				direction.toLowerCase().equals("left")) {
+			for (int i = 0; i < letters.length; i++) {
+				
+				boolean isUpper = Character.isUpperCase(letters[i]);
+				
+				if (!((letters[i] >= 'A' && letters[i] <= 'Z') ||
+					(letters[i] >= 'a' && letters[i] <= 'z'))) {
+					continue;
+				}
+				if ((indexOfAlphabet(letters[i]) - shift) < FIRST_INDEX_ALPHABET) {
+					letters[i] = ALPHABET[((indexOfAlphabet(letters[i]) - shift) + NUM_LETTERS_ALPHABET)];
+				} else {
+					letters[i] = ALPHABET[(indexOfAlphabet(letters[i]) - shift)];
+				}
+				
+				if (isUpper) {
+					letters[i] = Character.toUpperCase(letters[i]);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Helper method that checks if the user's input shift length is valid
+	 */
+	private static int checkShift(Scanner scanner) {
+		
+		int shift;
+		
+		while (true) {
+			System.out.print("Enter number of shifts (1 - 25): ");
+			if (scanner.hasNextInt()) {
+				shift = scanner.nextInt();
+				scanner.nextLine();
+				
+				if (shift < MIN_SHIFT || shift > MAX_SHIFT) {
+					System.out.println("Must enter 1 - 25. Try again.");
+					continue;
+				}
+				break;
+			}		
+		}
+		return shift;
+	}
+
+	/*
+	 * Helper method that checks if the user's input shift direction is valid
+	 */
+	private static String checkDirection(Scanner scanner) {
+		
+		String direction;
+		
+		while (true) {
+			System.out.print("Enter direction of shift (left/right): ");
+			direction = scanner.nextLine();
+			
+			if (direction.toLowerCase().equals("left") ||
+				direction.toLowerCase().equals("l") ||
+				direction.toLowerCase().equals("right") ||
+				direction.toLowerCase().equals("r")) {
+				
+				break;					
+				
+			} else {
+				System.out.println("Must enter valid direction. Try again.");
+				continue;
+			}
+		}
+		return direction;
 	}
 	
 	/*
@@ -280,11 +299,4 @@ public class CaesarCipher {
 		}
 		return -1;
 	}
-
 }
-	
-	
-
-
-
-
