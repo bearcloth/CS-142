@@ -1,3 +1,5 @@
+package caesarCypher;
+
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
@@ -194,7 +196,16 @@ public class CaesarCipher {
 		
 		File encryptedMessageFile = null;
 		
+		//edited code (test)
+		encryptedMessageFile = new File("encryptedMessage.txt");
+		
 		while (numAttempts > 0) {
+			
+			if (!encryptedMessageFile.exists()) {
+				System.out.println("\nFile does not exist.");
+				System.out.println("Please create a new file using encrypt.\n");
+	            break;
+	        } 
 			
 			System.out.println("You have " + numAttempts + " attempt(s) left!");
 			
@@ -202,6 +213,8 @@ public class CaesarCipher {
 			int inputShift = checkShift(scanner);
 			
 			Scanner keyScanner = new Scanner(key);
+			
+			
 			
 			if (keyScanner.hasNextLine()) {
 				
@@ -245,7 +258,9 @@ public class CaesarCipher {
 				
 				if (numAttempts == 0) {
 					System.out.println("No attempts left. Decryption failed!");
-					Files.delete(encryptedMessageFile.toPath());
+					if (encryptedMessageFile.delete()) {
+						System.out.println("File has been Deleted");
+					}
 				}
 			}
 			
@@ -269,5 +284,7 @@ public class CaesarCipher {
 }
 	
 	
+
+
 
 
