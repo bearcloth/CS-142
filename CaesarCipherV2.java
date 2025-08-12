@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +37,7 @@ public class CaesarCipherV2 {
 		File messageFile = new File("encryptedMessage.txt");
 		File keyFile = new File("key.txt");
 		
+		//Program Loop, begins with E or D prompt then runs differnt logic based on input
 		while(true) {
 			
 			System.out.print("Choose encrypt or decrypt (E/D): ");
@@ -108,7 +108,8 @@ public class CaesarCipherV2 {
 		Scanner scanner = new Scanner(chooser.getSelectedFile()); 
 		
 		//Delimiter is what is chosen to separate sequences of strings. 
-		scanner.useDelimiter("\\Z"); //changes the delimiter to end of input (\\z) and will read entire scanner text as string. 
+		scanner.useDelimiter("\\Z"); 
+		//changes the delimiter to end of input (\\z) and will read entire scanner text as string. 
 		
 		return scanner.next();
 		
@@ -160,20 +161,25 @@ public class CaesarCipherV2 {
 		return encyrptSystem(scanner, messageFile, writer, message);
 	}
 	
-		//designed for jpullfile. file is a string
-	private static String encyrptSystem(Scanner scanner, File messageFile, FileWriter writer, String message)
+	//Encrypts the given message and saves both the encrypted
+	// message and encryption key to files.
+	private static String encyrptSystem(
+			Scanner scanner, File messageFile, FileWriter writer, String message)
 			throws IOException {
+		// Ask the user for the encryption direction (e.g., left or right shift)
 		String direction = checkDirection(scanner);
-				
+		
+		// Ask the user for the shift amount
 		int shift = checkShift(scanner);
 				
 		char[] letters = message.toCharArray();
 			
+		// Apply the letter shift based on the chosen direction and shift amount
 		performLetterShift(direction, shift, letters);
-					
-		String encryptedMessage = new String(letters);
-			
-		System.out.println(encryptedMessage);
+		
+		//Output:
+		String encryptedMessage = new String(letters);	
+		System.out.println("\nEncrypted Message: " + encryptedMessage);
 		writer.write(encryptedMessage);
 		System.out.println("Message saved in " + messageFile.getName() +
 				" at " + messageFile.getAbsolutePath());
@@ -222,6 +228,7 @@ public class CaesarCipherV2 {
 		
 		while (true) {
 			System.out.print("Enter number of shifts (1 - 25): ");
+			//Check if input is int, save input if it is int
 			if (scanner.hasNextInt()) {
 				shift = scanner.nextInt();
 				scanner.nextLine();  //consume leftover /n from nextInt
@@ -229,9 +236,17 @@ public class CaesarCipherV2 {
 				if (shift < MIN_SHIFT || shift > MAX_SHIFT) {
 					System.out.println("Must enter 1 - 25. Try again.");
 					continue;
-				}
+				} 
+				
 				break;
+			//Check if next input is a string
+			//Restart input prompt if String to prevent endless Loop
+			} else if (scanner.hasNextLine()){
+				System.out.println("This is not a number, please enter a number");
+				scanner.nextLine();
+				continue;
 			}
+			
 			
 		}
 		return shift;
@@ -262,9 +277,11 @@ public class CaesarCipherV2 {
 				// we will subtract the sum of the index and shift by 26 to ensure it loops
 				// to the beginning of the alphabet.
 				if ((shift + indexOfAlphabet(letters[i])) >= NUM_LETTERS_ALPHABET) {
-					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]) - NUM_LETTERS_ALPHABET)];
+					letters[i] = 
+							ALPHABET[(shift + indexOfAlphabet(letters[i]) - NUM_LETTERS_ALPHABET)];
 				} else {
-					letters[i] = ALPHABET[(shift + indexOfAlphabet(letters[i]))];
+					letters[i] = 
+							ALPHABET[(shift + indexOfAlphabet(letters[i]))];
 				}
 				
 				// Checks to see if the letter we iterate over is uppercase
@@ -288,9 +305,12 @@ public class CaesarCipherV2 {
 				// If when subtracting the shift and it becomes less than 0,
 				// we add 26 to ensure it loops properly
 				if ((indexOfAlphabet(letters[i]) - shift) < FIRST_INDEX_ALPHABET) {
-					letters[i] = ALPHABET[((indexOfAlphabet(letters[i]) - shift) + NUM_LETTERS_ALPHABET)];
+					letters[i] = 
+							ALPHABET[((indexOfAlphabet(letters[i]) - shift) 
+									+ NUM_LETTERS_ALPHABET)];
 				} else {
-					letters[i] = ALPHABET[(indexOfAlphabet(letters[i]) - shift)];
+					letters[i] = 
+							ALPHABET[(indexOfAlphabet(letters[i]) - shift)];
 				}
 				
 				if (isUpper) {
@@ -312,6 +332,7 @@ public class CaesarCipherV2 {
 	public static String decrypt(Scanner scanner, File key)
 			throws IOException {
 		
+		//Setup attempt counter and variables for storing key information 
 		int numAttempts = MAX_NUM_ATTEMPTS;
 		String keyDirection = null;
 		int keyShift = 0;
@@ -320,13 +341,13 @@ public class CaesarCipherV2 {
 		
 		File encryptedMessageFile = null;
 		
-		//edited code (test)
+		 // Reference to the encrypted message file
 		encryptedMessageFile = new File("encryptedMessage.txt");
 		
-		
+		// Main loop: user gets multiple attempts to enter the correct decryption key
 		while (numAttempts > ZERO_ATTEMPTS) {
 			
-			// Program closes if encrypted message file does not exist in path
+			//Loop closes if encrypted message file does not exist in path
 			if (!encryptedMessageFile.exists()) {
 				System.out.println("\nFile does not exist.");
 				System.out.println("Please create a new file using encrypt.\n");
@@ -335,10 +356,11 @@ public class CaesarCipherV2 {
 			
 			System.out.println("You have " + numAttempts + " attempt(s) left!");
 			
-			
+			// Get user-provided decryption key details
 			String inputDirection = checkDirection(scanner);
 			int inputShift = checkShift(scanner);
 			
+			 //Read the actual stored key from the key file
 			Scanner keyScanner = new Scanner(key);
 			
 			if (keyScanner.hasNextLine()) {
@@ -349,37 +371,47 @@ public class CaesarCipherV2 {
 				keyShift = keyScanner.nextInt();
 			}
 			
+			// Check if user input matches the stored key and perform decrypt
 			if (inputDirection.equalsIgnoreCase(keyDirection) &&
 					inputShift == keyShift) {
-				
+				//Read File
 				encryptedMessageFile = new File("encryptedMessage.txt");
 				Scanner encryptedScanner = new Scanner(encryptedMessageFile);
-				encryptedScanner.useDelimiter("\\Z"); // change to read until end of file
+				//Change token to read until end of file
+				encryptedScanner.useDelimiter("\\Z"); 
 				String encryptedMessage = encryptedScanner.next();
 				encryptedScanner.close();
+				
+				//Convert to char array for shifting 
 				char[] letters = encryptedMessage.toCharArray();
 				
 				// Altering the direction to properly decrypt the encrypted message
 				if (inputDirection.equals("right")) {
+					//Reverse Shift to decrypt 
 					inputDirection = "left";
 					performLetterShift(inputDirection, inputShift, letters);
 					decryptedMessage = new String(letters);
 				} else {
+					//Reverse Shift to decrypt 
 					inputDirection = "right";
 					performLetterShift(inputDirection, inputShift, letters);
 					decryptedMessage = new String(letters);
 				}
 				
+				//Save Reverse Shift to file 
 				File decryptedMessageFile = new File("decryptedMessage.txt");
 				FileWriter writer = new FileWriter(decryptedMessageFile);
 				writer.write(decryptedMessage);
 				writer.close();
+				
+				//Output file location
 				System.out.println(decryptedMessageFile.getName() + " saved at " +
 				decryptedMessageFile.getAbsolutePath());
-				break;
+				
+				//Close Program 
+				System.exit(0);
 				
 			} else {
-				
 				numAttempts--;
 				
 				// If attempts run out, key.txt and encryptedMessage.txt is removed
@@ -390,11 +422,9 @@ public class CaesarCipherV2 {
 					
 					System.out.println("Files has been deleted!");
 					encryptedMessageFile.deleteOnExit(); //delete files on exit
-					System.exit(0);
-					
+					System.exit(0);	
 				}
 			}
-			
 		}
 		return decryptedMessage;
 	}
