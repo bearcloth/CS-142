@@ -347,8 +347,8 @@ public class CaesarCipherV2 {
 		// Main loop: user gets multiple attempts to enter the correct decryption key
 		while (numAttempts > ZERO_ATTEMPTS) {
 			
-			//Loop closes if encrypted message file does not exist in path
-			if (!encryptedMessageFile.exists()) {
+			//Loop closes if encrypted message or key file does not exist in path
+			if (!encryptedMessageFile.exists() || !key.exists()) {
 				System.out.println("\nFile does not exist.");
 				System.out.println("Please create a new file using encrypt.\n");
 	            break;
